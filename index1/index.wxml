@@ -1,0 +1,41 @@
+<view>
+  <scroll-view
+    class="virtualScrollView"
+    eventhandle
+    scroll-y
+    bindscrolltolower="onScrollLower"
+  >
+    <block
+      wx:for="{{ listData }}"
+      wx:key="screenIndex"
+      wx:for-index="screenIndex"
+      wx:for-item="screenItem"
+    >
+      <VirtualItem virtualId="virtual_{{pageIndex}}">
+        <view class="fall">
+          <block
+            wx:for="{{ screenItem.columns }}"
+            wx:key="columnIndex"
+            wx:for-index="columnIndex"
+            wx:for-item="column"
+          >
+            <view
+              style="margin-top: -{{screenItem.columnOffset[columnIndex]}}px;"
+              class="fallCol"
+            >
+              <view
+                wx:for="{{column}}"
+                style="height: {{ item.height }}px; background-color: {{ item.color }};"
+                wx:key="index"
+                wx:for-item="item"
+                wx:for-index="index"
+              >
+                screen: {{ screenIndex }}, column: {{ columnIndex }}
+              </view>
+            </view>
+          </block>
+        </view>
+      </VirtualItem>
+    </block>
+  </scroll-view>
+</view>

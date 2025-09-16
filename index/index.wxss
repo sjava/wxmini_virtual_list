@@ -1,0 +1,10 @@
+.waterfall-container {
+  display: flex;
+  padding: 0 15px;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

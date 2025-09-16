@@ -1,0 +1,4 @@
+/* components/virtualList/virtualList.wxss */
+.virtual-wrapper {
+  width: 100%;
+}

@@ -1,0 +1,44 @@
+/* index.wxss */
+.container {
+  width: 100%;
+}
+
+.waterfall {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 5rpx;
+  box-sizing: border-box;
+}
+
+.item {
+  background: #fff;
+  margin-bottom: 20rpx;
+  border-radius: 12rpx;
+  overflow: hidden;
+  box-shadow: 0 2rpx 10rpx rgba(0, 0, 0, 0.05);
+}
+
+.image {
+  width: 100%;
+  display: block;
+}
+
+.desc {
+  padding: 16rpx;
+  font-size: 28rpx;
+  text-align: center;
+}
+
+.loading {
+  text-align: center;
+  padding: 30rpx;
+  color: #999;
+}

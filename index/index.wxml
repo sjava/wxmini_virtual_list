@@ -1,0 +1,61 @@
+<scroll-view scroll-y="true" style="height: 100vh" bindscroll="onScroll">
+  <view class="waterfall-container">
+    <view class="column">
+      <!-- Top placeholder (unchanged) -->
+      <view
+        class="placeholder"
+        style="height: {{leftPlaceholderHeight}}px;"
+      ></view>
+
+      <!-- Visible items (unchanged) -->
+      <view
+        wx:for="{{visibleLeftData}}"
+        wx:key="id"
+        style="height: {{item.displayHeight}}px;"
+      >
+        <image
+          src="{{item.imageUrl}}"
+          style="width: 100%; height: {{item.displayHeight}}px;"
+          mode="widthFix"
+          lazy-load="true"
+        />
+      </view>
+
+      <!-- NEW: Bottom placeholder -->
+      <view
+        class="placeholder"
+        style="height: {{leftBottomPlaceholderHeight}}px;"
+      ></view>
+    </view>
+
+    <view style="width: 15px"></view>
+
+    <view class="column">
+      <!-- Top placeholder (unchanged) -->
+      <view
+        class="placeholder"
+        style="height: {{rightPlaceholderHeight}}px;"
+      ></view>
+
+      <!-- Visible items (unchanged) -->
+      <view
+        wx:for="{{visibleRightData}}"
+        wx:key="id"
+        style="height: {{item.displayHeight}}px;"
+      >
+        <image
+          src="{{item.imageUrl}}"
+          style="width: 100%; height: {{item.displayHeight}}px;"
+          mode="widthFix"
+          lazy-load="true"
+        />
+      </view>
+
+      <!-- NEW: Bottom placeholder -->
+      <view
+        class="placeholder"
+        style="height: {{rightBottomPlaceholderHeight}}px;"
+      ></view>
+    </view>
+  </view>
+</scroll-view>

@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "VirtualItem": "../components/virtualItem/virtualItem"
+  }
+}

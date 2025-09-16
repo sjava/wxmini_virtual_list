@@ -1,0 +1,6 @@
+<view id="{{virtualId}}" class="virtual-wrapper">
+  <block wx:if="{{isShow}}">
+    <slot></slot>
+  </block>
+  <view wx:else style="height: {{height}}px;"></view>
+</view>

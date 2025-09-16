@@ -1,0 +1,45 @@
+<!-- index.wxml -->
+<scroll-view
+  class="container"
+  scroll-y
+  bindscroll="onScroll"
+  style="height: 100vh"
+>
+  <!-- 上方占位 -->
+  <view style="height: {{topPlaceholderHeight}}px;"></view>
+
+  <!-- 瀑布流双列 -->
+  <view class="waterfall">
+    <view class="column">
+      <view wx:for="{{column1}}" wx:key="id" class="item">
+        <image
+          id="img-{{item.id}}"
+          src="{{item.url}}"
+          mode="widthFix"
+          bindload="onImageLoad"
+          data-index="{{item.id}}"
+          class="image"
+        />
+        <view class="desc">商品 {{item.id + 1}}</view>
+      </view>
+    </view>
+    <view class="column">
+      <view wx:for="{{column2}}" wx:key="id" class="item">
+        <image
+          id="img-{{item.id}}"
+          src="{{item.url}}"
+          mode="widthFix"
+          bindload="onImageLoad"
+          data-index="{{item.id}}"
+          class="image"
+        />
+        <view class="desc">商品 {{item.id + 1}}</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 下方占位 -->
+  <view style="height: {{bottomPlaceholderHeight}}px;"></view>
+
+  <view wx:if="{{loading}}" class="loading">加载中...</view>
+</scroll-view>
