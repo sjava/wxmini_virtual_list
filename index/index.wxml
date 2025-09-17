@@ -15,9 +15,8 @@
       >
         <image
           src="{{item.imageUrl}}"
-          style="width: 100%; height: {{item.displayHeight}}px;"
+          style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
-          lazy-load="true"
         />
       </view>
 
@@ -28,7 +27,7 @@
       ></view>
     </view>
 
-    <view style="width: 15px"></view>
+    <view style="width: {{gapInRpx}}rpx"></view>
 
     <view class="column">
       <!-- Top placeholder (unchanged) -->
@@ -45,9 +44,8 @@
       >
         <image
           src="{{item.imageUrl}}"
-          style="width: 100%; height: {{item.displayHeight}}px;"
+          style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
-          lazy-load="true"
         />
       </view>
 

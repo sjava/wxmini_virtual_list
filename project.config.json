@@ -48,7 +48,7 @@
     "disableSWC": true
   },
   "compileType": "miniprogram",
-  "libVersion": "2.25.2",
+  "libVersion": "3.9.3",
   "appid": "wxe6b05d7287f7af1d",
   "projectname": "virtual-list",
   "condition": {},

@@ -1,6 +1,6 @@
 .waterfall-container {
   display: flex;
-  padding: 0 15px;
+  padding: 0 30rpx;
 }
 
 .column {

@@ -1,6 +1,10 @@
 const app = getApp();
-const screenHeight = wx.getSystemInfoSync().windowHeight; // 屏幕高度
-const columnWidth = (wx.getSystemInfoSync().windowWidth - 45) / 2; // 每列的宽度
+const windowInfo = wx.getWindowInfo();
+const screenHeight = windowInfo.windowHeight; // 屏幕高度
+
+const gapInRpx = 30; // 列间距,单位rpx
+const gapInPx = (gapInRpx / 750) * windowInfo.windowWidth; // 将rpx转换为px
+const columnWidth = (windowInfo.windowWidth - gapInPx * 3) / 2; // 每列的宽度
 
 Page({
   data: {
@@ -16,12 +20,13 @@ Page({
     page: 1,
     loading: false,
     isInitialLoad: true,
+    gapInRpx,
   },
 
   throttledScrollHandler: null,
 
   onLoad: function () {
-    this.throttledScrollHandler = this.throttle(this.handleScroll, 200);
+    this.throttledScrollHandler = this.throttle(this.handleScroll, 50);
     this.loadInitialData();
   },
 
@@ -72,7 +77,7 @@ Page({
     } = this.data;
 
     data.forEach((item) => {
-      const displayHeight = (item.height / item.width) * columnWidth;
+      const displayHeight = (item.height / item.width) * columnWidth + 5;
       item.displayHeight = displayHeight;
 
       if (leftColumnHeight <= rightColumnHeight) {
@@ -132,11 +137,11 @@ Page({
 
   handleScroll: function (e) {
     console.log("handleScroll called with event:", e);
-    if (!e || typeof e.detail === "undefined") {
-      // This guard is still useful for robustness but the root cause is fixed.
-      // console.error("handleScroll called with invalid event:", e);
-      return;
-    }
+    // if (!e || typeof e.detail === "undefined") {
+    //   // This guard is still useful for robustness but the root cause is fixed.
+    //   // console.error("handleScroll called with invalid event:", e);
+    //   return;
+    // }
 
     const { scrollTop, scrollHeight } = e.detail;
 
@@ -152,7 +157,7 @@ Page({
   },
 
   updateVisibleData: function (scrollTop) {
-    const buffer = screenHeight; // Render one screen height above and below the viewport
+    const buffer = screenHeight * 2; // Render one screen height above and below the viewport
     const startIndex = scrollTop > 0 ? scrollTop - buffer : 0;
     const endIndex = scrollTop + screenHeight + buffer;
 
