@@ -69,7 +69,6 @@ Page({
     for (let i = 0; i < 20; i++) {
       const height = Math.floor(Math.random() * 200 + 200);
       const id = this.allData.length + i;
-      console.log("Generating item with id:", id, "and height:", height);
       data.push({
         id: `id_${id}`,
         // imageUrl: `https://picsum.photos/id/${id}/300/${height}`,
@@ -88,23 +87,18 @@ Page({
     //   leftColumnHeight,
     //   rightColumnHeight,
     // } = this.data;
-    let {
-      leftColumnData,
-      rightColumnData,
-      leftColumnHeight,
-      rightColumnHeight,
-    } = this;
+    let { leftColumnData, rightColumnData } = this;
 
     data.forEach((item) => {
       const displayHeight = (item.height / item.width) * columnWidth + 5;
       item.displayHeight = displayHeight;
 
-      if (leftColumnHeight <= rightColumnHeight) {
+      if (this.leftColumnHeight <= this.rightColumnHeight) {
         leftColumnData.push(item);
-        leftColumnHeight += displayHeight;
+        this.leftColumnHeight += displayHeight;
       } else {
         rightColumnData.push(item);
-        rightColumnHeight += displayHeight;
+        this.rightColumnHeight += displayHeight;
       }
     });
 
@@ -122,6 +116,10 @@ Page({
         detail: { scrollTop: 0, scrollHeight: scrollHeight },
       });
       this.setData({ isInitialLoad: false });
+    } else {
+      setTimeout(() => {
+        this.updateVisibleData(currentScrollTop);
+      }, 50);
     }
     // this.setData(
     //   {
@@ -192,6 +190,17 @@ Page({
     const actualScrollHeight = Math.max(
       this.leftColumnHeight,
       this.rightColumnHeight,
+    );
+    console.log("leftColumnHeight:", this.leftColumnHeight);
+    console.log("rightColumnHeight:", this.rightColumnHeight);
+    console.log("leftColumnData length:", this.leftColumnData.length);
+    console.log("rightColumnData length:", this.rightColumnData.length);
+    console.log("allData length:", this.allData.length);
+    console.log(
+      "ScrollTop:",
+      scrollTop,
+      "ActualScrollHeight:",
+      actualScrollHeight,
     );
 
     this.updateVisibleData(scrollTop);

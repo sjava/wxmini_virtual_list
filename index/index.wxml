@@ -11,13 +11,14 @@
       <view
         wx:for="{{visibleLeftData}}"
         wx:key="id"
-        style="height: {{item.displayHeight}}px;"
+        style="height: {{item.displayHeight}}px;display: flex;flex-direction: column;"
       >
         <image
           src="{{item.imageUrl}}"
           style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
         />
+        <view style="width: 100%; height: 5px; background-color: #fff"></view>
       </view>
 
       <!-- NEW: Bottom placeholder -->
@@ -40,13 +41,14 @@
       <view
         wx:for="{{visibleRightData}}"
         wx:key="id"
-        style="height: {{item.displayHeight}}px;"
+        style="height: {{item.displayHeight}}px;display: flex;flex-direction: column;"
       >
         <image
           src="{{item.imageUrl}}"
           style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
         />
+        <view style="width: 100%; height: 5px; background-color: #fff"></view>
       </view>
 
       <!-- NEW: Bottom placeholder -->
