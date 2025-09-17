@@ -48,7 +48,7 @@ Page({
           this.setData({ loading: false, page: this.data.page + 1 });
           wx.hideLoading();
           resolve();
-        }, 100);
+        }, 150);
         // this.setData({
         //   loading: false,
         //   page: this.data.page + 1,
@@ -66,7 +66,8 @@ Page({
       const id = this.data.allData.length + i;
       data.push({
         id: `id_${id}`,
-        imageUrl: `https://picsum.photos/id/${id}/300/${height}`,
+        // imageUrl: `https://picsum.photos/id/${id}/300/${height}`,
+        imageUrl: `https://placebear.com/300/${height}`,
         width: 300,
         height,
       });
@@ -95,6 +96,9 @@ Page({
       }
     });
 
+    // 保存当前滚动位置，避免刷新后位置丢失
+    const currentScrollTop = this.currentScrollTop || 0;
+
     this.setData(
       {
         allData: this.data.allData.concat(data),
@@ -102,21 +106,28 @@ Page({
         rightColumnData,
         leftColumnHeight,
         rightColumnHeight,
+        // 先保持原有可视数据，避免白屏
+        visibleLeftData: this.data.visibleLeftData,
+        visibleRightData: this.data.visibleRightData,
       },
       () => {
+        // 延迟更新可视数据，确保布局完成
+        setTimeout(() => {
+          this.updateVisibleDataWithFallback(currentScrollTop);
+        }, 50);
         // Force update visible data after new data is processed
-        this.updateVisibleDataAfterLoad();
-
-        if (this.data.isInitialLoad) {
-          const scrollHeight = Math.max(
-            this.data.leftColumnHeight,
-            this.data.rightColumnHeight,
-          );
-          this.handleScroll({
-            detail: { scrollTop: 0, scrollHeight: scrollHeight },
-          });
-          this.setData({ isInitialLoad: false });
-        }
+        // this.updateVisibleDataAfterLoad();
+        //
+        // if (this.data.isInitialLoad) {
+        //   const scrollHeight = Math.max(
+        //     this.data.leftColumnHeight,
+        //     this.data.rightColumnHeight,
+        //   );
+        //   this.handleScroll({
+        //     detail: { scrollTop: 0, scrollHeight: scrollHeight },
+        //   });
+        //   this.setData({ isInitialLoad: false });
+        // }
       },
     );
   },
@@ -138,14 +149,13 @@ Page({
   },
 
   onScroll: function (e) {
-    // if (this.data.loading) {
-    //   return;
-    // }
+    if (e && e.detail && typeof e.detail.scrollTop !== "undefined") {
+      this.currentScrollTop = e.detail.scrollTop;
+    }
     this.throttledScrollHandler(e);
   },
 
   handleScroll: function (e) {
-    console.log("handleScroll called with event:", e);
     if (!e || !e.detail) {
       // This guard is still useful for robustness but the root cause is fixed.
       console.error("handleScroll called with invalid event:", e);
@@ -172,7 +182,7 @@ Page({
   },
 
   updateVisibleData: function (scrollTop) {
-    const buffer = screenHeight * 2; // Render one screen height above and below the viewport
+    const buffer = screenHeight * 3; // Render one screen height above and below the viewport
     const startIndex = scrollTop > 0 ? scrollTop - buffer : 0;
     const endIndex = scrollTop + screenHeight + buffer;
 
@@ -240,15 +250,12 @@ Page({
     });
   },
 
-  updateVisibleDataAfterLoad: function () {
-    // Get current scroll position and force update visible data
-    const query = wx.createSelectorQuery();
-    query.selectViewport().scrollOffset();
-    query.exec((res) => {
-      if (res[0]) {
-        this.updateVisibleData(res[0].scrollTop);
-      }
-    });
+  updateVisibleDataWithFallback: function (scrollTop) {
+    // 存储当前滚动位置以便后续使用
+    this.currentScrollTop = scrollTop;
+
+    // 确保有足够的数据可见，防止白屏
+    this.updateVisibleData(scrollTop);
   },
 
   loadMore: function () {
