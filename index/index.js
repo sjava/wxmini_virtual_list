@@ -43,12 +43,18 @@ Page({
       setTimeout(() => {
         const newData = this.generateMockData();
         this.processData(newData);
-        this.setData({
-          loading: false,
-          page: this.data.page + 1,
-        });
-        wx.hideLoading();
-        resolve();
+        // Add small delay to ensure rendering is complete
+        setTimeout(() => {
+          this.setData({ loading: false, page: this.data.page + 1 });
+          wx.hideLoading();
+          resolve();
+        }, 100);
+        // this.setData({
+        //   loading: false,
+        //   page: this.data.page + 1,
+        // });
+        // wx.hideLoading();
+        // resolve();
       }, 500);
     });
   },
@@ -98,6 +104,9 @@ Page({
         rightColumnHeight,
       },
       () => {
+        // Force update visible data after new data is processed
+        this.updateVisibleDataAfterLoad();
+
         if (this.data.isInitialLoad) {
           const scrollHeight = Math.max(
             this.data.leftColumnHeight,
@@ -129,28 +138,34 @@ Page({
   },
 
   onScroll: function (e) {
-    if (this.data.loading) {
-      return;
-    }
+    // if (this.data.loading) {
+    //   return;
+    // }
     this.throttledScrollHandler(e);
   },
 
   handleScroll: function (e) {
     console.log("handleScroll called with event:", e);
-    // if (!e || typeof e.detail === "undefined") {
-    //   // This guard is still useful for robustness but the root cause is fixed.
-    //   // console.error("handleScroll called with invalid event:", e);
-    //   return;
-    // }
+    if (!e || !e.detail) {
+      // This guard is still useful for robustness but the root cause is fixed.
+      console.error("handleScroll called with invalid event:", e);
+      return;
+    }
 
-    const { scrollTop, scrollHeight } = e.detail;
+    const { scrollTop } = e.detail;
+
+    // Calculate actual scroll height based on column heights
+    const actualScrollHeight = Math.max(
+      this.data.leftColumnHeight,
+      this.data.rightColumnHeight,
+    );
 
     this.updateVisibleData(scrollTop);
 
     const threshold = 200;
     if (
       !this.data.loading &&
-      scrollTop + screenHeight >= scrollHeight - threshold
+      scrollTop + screenHeight >= actualScrollHeight - threshold
     ) {
       this.loadMore();
     }
@@ -222,6 +237,17 @@ Page({
       // Set the new bottom placeholder heights
       leftBottomPlaceholderHeight: leftBottomPlaceholderHeight,
       rightBottomPlaceholderHeight: rightBottomPlaceholderHeight,
+    });
+  },
+
+  updateVisibleDataAfterLoad: function () {
+    // Get current scroll position and force update visible data
+    const query = wx.createSelectorQuery();
+    query.selectViewport().scrollOffset();
+    query.exec((res) => {
+      if (res[0]) {
+        this.updateVisibleData(res[0].scrollTop);
+      }
     });
   },
 
