@@ -8,11 +8,11 @@ const columnWidth = (windowInfo.windowWidth - gapInPx * 3) / 2; // 每列的宽�
 
 Page({
   data: {
-    allData: [],
-    leftColumnData: [],
-    rightColumnData: [],
-    leftColumnHeight: 0,
-    rightColumnHeight: 0,
+    // allData: [],
+    // leftColumnData: [],
+    // rightColumnData: [],
+    // leftColumnHeight: 0,
+    // rightColumnHeight: 0,
     visibleLeftData: [],
     visibleRightData: [],
     leftPlaceholderHeight: 0,
@@ -22,6 +22,11 @@ Page({
     isInitialLoad: true,
     gapInRpx,
   },
+  allData: [],
+  leftColumnData: [],
+  rightColumnData: [],
+  leftColumnHeight: 0,
+  rightColumnHeight: 0,
 
   throttledScrollHandler: null,
 
@@ -63,7 +68,8 @@ Page({
     const data = [];
     for (let i = 0; i < 20; i++) {
       const height = Math.floor(Math.random() * 200 + 200);
-      const id = this.data.allData.length + i;
+      const id = this.allData.length + i;
+      console.log("Generating item with id:", id, "and height:", height);
       data.push({
         id: `id_${id}`,
         // imageUrl: `https://picsum.photos/id/${id}/300/${height}`,
@@ -76,12 +82,18 @@ Page({
   },
 
   processData: function (data) {
+    // let {
+    //   leftColumnData,
+    //   rightColumnData,
+    //   leftColumnHeight,
+    //   rightColumnHeight,
+    // } = this.data;
     let {
       leftColumnData,
       rightColumnData,
       leftColumnHeight,
       rightColumnHeight,
-    } = this.data;
+    } = this;
 
     data.forEach((item) => {
       const displayHeight = (item.height / item.width) * columnWidth + 5;
@@ -96,40 +108,52 @@ Page({
       }
     });
 
+    this.allData = this.allData.concat(data);
     // 保存当前滚动位置，避免刷新后位置丢失
     const currentScrollTop = this.currentScrollTop || 0;
 
-    this.setData(
-      {
-        allData: this.data.allData.concat(data),
-        leftColumnData,
-        rightColumnData,
-        leftColumnHeight,
-        rightColumnHeight,
-        // 先保持原有可视数据，避免白屏
-        visibleLeftData: this.data.visibleLeftData,
-        visibleRightData: this.data.visibleRightData,
-      },
-      () => {
-        // 延迟更新可视数据，确保布局完成
-        setTimeout(() => {
-          this.updateVisibleDataWithFallback(currentScrollTop);
-        }, 50);
-        // Force update visible data after new data is processed
-        // this.updateVisibleDataAfterLoad();
-        //
-        // if (this.data.isInitialLoad) {
-        //   const scrollHeight = Math.max(
-        //     this.data.leftColumnHeight,
-        //     this.data.rightColumnHeight,
-        //   );
-        //   this.handleScroll({
-        //     detail: { scrollTop: 0, scrollHeight: scrollHeight },
-        //   });
-        //   this.setData({ isInitialLoad: false });
-        // }
-      },
-    );
+    // this.updateVisibleDataWithFallback(currentScrollTop);
+    if (this.data.isInitialLoad) {
+      const scrollHeight = Math.max(
+        this.leftColumnHeight,
+        this.rightColumnHeight,
+      );
+      this.handleScroll({
+        detail: { scrollTop: 0, scrollHeight: scrollHeight },
+      });
+      this.setData({ isInitialLoad: false });
+    }
+    // this.setData(
+    //   {
+    //     allData: this.data.allData.concat(data),
+    //     leftColumnData,
+    //     rightColumnData,
+    //     leftColumnHeight,
+    //     rightColumnHeight,
+    //     // 先保持原有可视数据，避免白屏
+    //     // visibleLeftData: this.data.visibleLeftData,
+    //     // visibleRightData: this.data.visibleRightData,
+    //   },
+    //   () => {
+    //     // 延迟更新可视数据，确保布局完成
+    //     setTimeout(() => {
+    //       this.updateVisibleDataWithFallback(currentScrollTop);
+    //     }, 50);
+    //     // Force update visible data after new data is processed
+    //     // this.updateVisibleDataAfterLoad();
+    //     //
+    //     if (this.data.isInitialLoad) {
+    //       const scrollHeight = Math.max(
+    //         this.data.leftColumnHeight,
+    //         this.data.rightColumnHeight,
+    //       );
+    //       this.handleScroll({
+    //         detail: { scrollTop: 0, scrollHeight: scrollHeight },
+    //       });
+    //       this.setData({ isInitialLoad: false });
+    //     }
+    //   },
+    // );
   },
 
   // --- CORRECTED THROTTLE FUNCTION ---
@@ -166,8 +190,8 @@ Page({
 
     // Calculate actual scroll height based on column heights
     const actualScrollHeight = Math.max(
-      this.data.leftColumnHeight,
-      this.data.rightColumnHeight,
+      this.leftColumnHeight,
+      this.rightColumnHeight,
     );
 
     this.updateVisibleData(scrollTop);
@@ -192,8 +216,8 @@ Page({
     let leftPlaceholderHeight = 0;
     let lastVisibleLeftBottom = 0; // Track the bottom position of the last visible item
 
-    for (let i = 0; i < this.data.leftColumnData.length; i++) {
-      const item = this.data.leftColumnData[i];
+    for (let i = 0; i < this.leftColumnData.length; i++) {
+      const item = this.leftColumnData[i];
       const itemBottom = leftTop + item.displayHeight;
 
       // Check if the item is within the visible range (viewport + buffer)
@@ -211,7 +235,7 @@ Page({
     // Calculate bottom placeholder height
     const leftBottomPlaceholderHeight = Math.max(
       0,
-      this.data.leftColumnHeight - lastVisibleLeftBottom,
+      this.leftColumnHeight - lastVisibleLeftBottom,
     );
 
     // --- Right Column Calculation ---
@@ -220,8 +244,8 @@ Page({
     let rightPlaceholderHeight = 0;
     let lastVisibleRightBottom = 0; // Track for the right column
 
-    for (let i = 0; i < this.data.rightColumnData.length; i++) {
-      const item = this.data.rightColumnData[i];
+    for (let i = 0; i < this.rightColumnData.length; i++) {
+      const item = this.rightColumnData[i];
       const itemBottom = rightTop + item.displayHeight;
       if (itemBottom > startIndex && rightTop < endIndex) {
         if (rightVisibleData.length === 0) {
@@ -235,7 +259,7 @@ Page({
     // Calculate bottom placeholder height
     const rightBottomPlaceholderHeight = Math.max(
       0,
-      this.data.rightColumnHeight - lastVisibleRightBottom,
+      this.rightColumnHeight - lastVisibleRightBottom,
     );
 
     // --- Update the page data ---
