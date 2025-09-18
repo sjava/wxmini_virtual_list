@@ -1,4 +1,10 @@
-<scroll-view scroll-y="true" style="height: 100vh" bindscroll="onScroll">
+<scroll-view
+  scroll-y="true"
+  style="height: 100vh"
+  bindscroll="onScroll"
+  enhanced
+  show-scrollbar="{{false}}"
+>
   <view class="waterfall-container">
     <view class="column">
       <!-- Top placeholder (unchanged) -->
@@ -17,15 +23,10 @@
           src="{{item.imageUrl}}"
           style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
+          lazy-load="true"
         />
         <view style="width: 100%; height: 5px; background-color: #fff"></view>
       </view>
-
-      <!-- NEW: Bottom placeholder -->
-      <view
-        class="placeholder"
-        style="height: {{leftBottomPlaceholderHeight}}px;"
-      ></view>
     </view>
 
     <view style="width: {{gapInRpx}}rpx"></view>
@@ -47,15 +48,10 @@
           src="{{item.imageUrl}}"
           style="width: 100%;height:{{item.displayHeight-5}}px;"
           mode="widthFix"
+          lazy-load="true"
         />
         <view style="width: 100%; height: 5px; background-color: #fff"></view>
       </view>
-
-      <!-- NEW: Bottom placeholder -->
-      <view
-        class="placeholder"
-        style="height: {{rightBottomPlaceholderHeight}}px;"
-      ></view>
     </view>
   </view>
 </scroll-view>

@@ -8,11 +8,6 @@ const columnWidth = (windowInfo.windowWidth - gapInPx * 3) / 2; // 每列的宽�
 
 Page({
   data: {
-    // allData: [],
-    // leftColumnData: [],
-    // rightColumnData: [],
-    // leftColumnHeight: 0,
-    // rightColumnHeight: 0,
     visibleLeftData: [],
     visibleRightData: [],
     leftPlaceholderHeight: 0,
@@ -54,12 +49,6 @@ Page({
           wx.hideLoading();
           resolve();
         }, 150);
-        // this.setData({
-        //   loading: false,
-        //   page: this.data.page + 1,
-        // });
-        // wx.hideLoading();
-        // resolve();
       }, 500);
     });
   },
@@ -71,7 +60,6 @@ Page({
       const id = this.allData.length + i;
       data.push({
         id: `id_${id}`,
-        // imageUrl: `https://picsum.photos/id/${id}/300/${height}`,
         imageUrl: `https://placebear.com/300/${height}`,
         width: 300,
         height,
@@ -81,15 +69,10 @@ Page({
   },
 
   processData: function (data) {
-    // let {
-    //   leftColumnData,
-    //   rightColumnData,
-    //   leftColumnHeight,
-    //   rightColumnHeight,
-    // } = this.data;
     let { leftColumnData, rightColumnData } = this;
 
     data.forEach((item) => {
+      // 计算图片显示高度，保持宽高比,并加上5px的margin-bottom
       const displayHeight = (item.height / item.width) * columnWidth + 5;
       item.displayHeight = displayHeight;
 
@@ -106,7 +89,6 @@ Page({
     // 保存当前滚动位置，避免刷新后位置丢失
     const currentScrollTop = this.currentScrollTop || 0;
 
-    // this.updateVisibleDataWithFallback(currentScrollTop);
     if (this.data.isInitialLoad) {
       const scrollHeight = Math.max(
         this.leftColumnHeight,
@@ -121,37 +103,6 @@ Page({
         this.updateVisibleData(currentScrollTop);
       }, 50);
     }
-    // this.setData(
-    //   {
-    //     allData: this.data.allData.concat(data),
-    //     leftColumnData,
-    //     rightColumnData,
-    //     leftColumnHeight,
-    //     rightColumnHeight,
-    //     // 先保持原有可视数据，避免白屏
-    //     // visibleLeftData: this.data.visibleLeftData,
-    //     // visibleRightData: this.data.visibleRightData,
-    //   },
-    //   () => {
-    //     // 延迟更新可视数据，确保布局完成
-    //     setTimeout(() => {
-    //       this.updateVisibleDataWithFallback(currentScrollTop);
-    //     }, 50);
-    //     // Force update visible data after new data is processed
-    //     // this.updateVisibleDataAfterLoad();
-    //     //
-    //     if (this.data.isInitialLoad) {
-    //       const scrollHeight = Math.max(
-    //         this.data.leftColumnHeight,
-    //         this.data.rightColumnHeight,
-    //       );
-    //       this.handleScroll({
-    //         detail: { scrollTop: 0, scrollHeight: scrollHeight },
-    //       });
-    //       this.setData({ isInitialLoad: false });
-    //     }
-    //   },
-    // );
   },
 
   // --- CORRECTED THROTTLE FUNCTION ---
@@ -171,9 +122,6 @@ Page({
   },
 
   onScroll: function (e) {
-    if (e && e.detail && typeof e.detail.scrollTop !== "undefined") {
-      this.currentScrollTop = e.detail.scrollTop;
-    }
     this.throttledScrollHandler(e);
   },
 
@@ -185,22 +133,12 @@ Page({
     }
 
     const { scrollTop } = e.detail;
+    this.currentScrollTop = scrollTop; // 保存当前滚动位置
 
     // Calculate actual scroll height based on column heights
     const actualScrollHeight = Math.max(
       this.leftColumnHeight,
       this.rightColumnHeight,
-    );
-    console.log("leftColumnHeight:", this.leftColumnHeight);
-    console.log("rightColumnHeight:", this.rightColumnHeight);
-    console.log("leftColumnData length:", this.leftColumnData.length);
-    console.log("rightColumnData length:", this.rightColumnData.length);
-    console.log("allData length:", this.allData.length);
-    console.log(
-      "ScrollTop:",
-      scrollTop,
-      "ActualScrollHeight:",
-      actualScrollHeight,
     );
 
     this.updateVisibleData(scrollTop);
@@ -208,14 +146,15 @@ Page({
     const threshold = 200;
     if (
       !this.data.loading &&
-      scrollTop + screenHeight >= actualScrollHeight - threshold
+      this.data.page <= 10 &&
+      scrollTop + screenHeight * 2 >= actualScrollHeight - threshold
     ) {
       this.loadMore();
     }
   },
 
   updateVisibleData: function (scrollTop) {
-    const buffer = screenHeight * 3; // Render one screen height above and below the viewport
+    const buffer = screenHeight * 2; // Render one screen height above and below the viewport
     const startIndex = scrollTop > 0 ? scrollTop - buffer : 0;
     const endIndex = scrollTop + screenHeight + buffer;
 
@@ -241,11 +180,6 @@ Page({
       }
       leftTop = itemBottom;
     }
-    // Calculate bottom placeholder height
-    const leftBottomPlaceholderHeight = Math.max(
-      0,
-      this.leftColumnHeight - lastVisibleLeftBottom,
-    );
 
     // --- Right Column Calculation ---
     let rightVisibleData = [];
@@ -265,11 +199,6 @@ Page({
       }
       rightTop = itemBottom;
     }
-    // Calculate bottom placeholder height
-    const rightBottomPlaceholderHeight = Math.max(
-      0,
-      this.rightColumnHeight - lastVisibleRightBottom,
-    );
 
     // --- Update the page data ---
     this.setData({
@@ -277,18 +206,7 @@ Page({
       visibleRightData: rightVisibleData,
       leftPlaceholderHeight: leftPlaceholderHeight,
       rightPlaceholderHeight: rightPlaceholderHeight,
-      // Set the new bottom placeholder heights
-      leftBottomPlaceholderHeight: leftBottomPlaceholderHeight,
-      rightBottomPlaceholderHeight: rightBottomPlaceholderHeight,
     });
-  },
-
-  updateVisibleDataWithFallback: function (scrollTop) {
-    // 存储当前滚动位置以便后续使用
-    this.currentScrollTop = scrollTop;
-
-    // 确保有足够的数据可见，防止白屏
-    this.updateVisibleData(scrollTop);
   },
 
   loadMore: function () {
