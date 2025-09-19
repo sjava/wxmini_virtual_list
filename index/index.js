@@ -99,9 +99,9 @@ Page({
       });
       this.setData({ isInitialLoad: false });
     } else {
-      setTimeout(() => {
+      wx.nextTick(() => {
         this.updateVisibleData(currentScrollTop);
-      }, 50);
+      });
     }
   },
 
